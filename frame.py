@@ -6,10 +6,10 @@ from skimage.transform import resize
 def box(arr, w, h, x, y):
     for a in range(x, x+w):
         for b in range(y, y+h):
-            arr[b, a] = 255
+            arr[b, a] = 1
 
 def graphic_or(arr1, arr2):
-    res = np.zeros(shape=arr1.shape, dtype=np.uint8)
+    res = np.zeros(shape=arr1.shape, dtype=float)
     count_alt = 0
     for i, (y1, y2) in enumerate(zip(arr1, arr2)):
         for j, (x1, x2) in enumerate(zip(y1, y2)):
@@ -33,22 +33,25 @@ box(arr1, 20, 50, 75, 0)
 box(arr2, 20, 50, 40, 0)
 print(np.sum(arr1))
 
-plt.imshow(arr2, cmap='gray')
-plt.show()
-arr2 = cv2.resize(arr2, (100, 100))
-print(np.sum(arr2))
 # plt.imshow(arr2, cmap='gray')
 # plt.show()
-# plt.imshow(arr2, cmap='gray', vmin=0, vmax=1)
+arr2 = cv2.resize(arr2, (100, 100))
+print(np.sum(arr2))
+plt.imshow(arr2, cmap='gray')
+plt.show()
+print(arr2[20, 32])
+arr2 = np.array(arr2, dtype=float)
+arr2*=0.5
+print(arr2[20, 32])
+
+# print(np.array([1, 1, 0, 0, 1, 1])*0.5)
+
+# plt.imshow(arr2, cmap='gray')
 # plt.show()
-arr2*=np.uint8(0.5)
-
-print(np.array([1, 1, 0, 0, 1, 1])*0.5)
-
 plt.imshow(arr2, cmap='gray', vmin=0, vmax=1)
 plt.show()
 
 arr = graphic_or(arr1, arr2)
 
-# plt.imshow(arr, cmap='gray', vmin=0, vmax=1)
-# plt.show()
+plt.imshow(arr, cmap='gray', vmin=0, vmax=1)
+plt.show()

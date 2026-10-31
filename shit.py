@@ -1,6 +1,20 @@
 import numpy as np
-from skimage.transform import resize
+import cv2
 import matplotlib.pyplot as plt
+
+def graphic_or(arr1, arr2):
+    res = np.zeros(shape=arr1.shape, dtype=float)
+    count_alt = 0
+    for i, (y1, y2) in enumerate(zip(arr1, arr2)):
+        for j, (x1, x2) in enumerate(zip(y1, y2)):
+            if x1==0:
+                res[i, j] = x2
+                count_alt+=1
+            else:
+                res[i, j] = x1
+    # print(np.sum(res))
+    # print(count_alt)
+    return res
 
 class Object:
     def __init__(self, sx, sy, sz):
@@ -44,7 +58,7 @@ class Frame:
         ly2 = int(min(ly/2+y, self.world.ylim))
 
         z = int(min(max(0, z), self.world.zlim))
-        print(lx1, lx2, ly1, ly2, z)
+        # print(lx1, lx2, ly1, ly2, z)
 
         layer = self.world.world[z, ly1:ly2, lx1:lx2]
 
@@ -57,15 +71,12 @@ class Frame:
         lx, ly = self.dims
         i=0
         while i<self.render_distance:
-            layer = self.layer(coord, lx, ly)
+            layer = np.array(self.layer(coord, lx, ly), dtype=np.uint8)
             # print(layer.shape)
-            layer = resize(layer, self.dims)
+            layer = np.array(cv2.resize(layer, self.dims), dtype=float)
             layer*=(1-0.01*i)
             np.append(chunk, layer)
-            rendition = np.logical_or(rendition, layer)
-            # print(np.sum(rendition))
-            # plt.imshow(rendition, cmap='gray')
-            # plt.show()
+            rendition = graphic_or(rendition, layer)
             lx*=ax
             ly*=ay
             i+=1
@@ -77,22 +88,15 @@ class Frame:
 
 
 world = World(1000, 1000, 1000)
-b1 = Object(100, 100, 500)
-b2 = Object(100, 100, 500)
-# b3 = Object(10, 10, 10)
-# b4 = Object(10, 20, 20)
+b1 = Object(100, 30, 500)
+b2 = Object(100, 30, 500)
 
 world.place(b1, 100, 0, 0)
 world.place(b2, 300, 0, 0)
-# world.place(b3, 210, 0, 50)
-# world.place(b4, 310, 0, 50)
-# plt.imshow(world.world[0], cmap='gray')
-# plt.show()
-# print(np.sum(world.world))
 
-cam = Frame(world, (1.02, 1.02), (4, 3), (100, 100), 50)
+cam = Frame(world, (1.01, 1.01), (4, 3), (150, 150), 500)
 cam.render([250, 50, 0])
 
 print(cam.frame.shape)
-plt.imshow(cam.frame, cmap='gray')
+plt.imshow(cam.frame, cmap='gray', vmin=0, vmax=1, origin='lower')
 plt.show()

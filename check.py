@@ -1,8 +1,12 @@
+from matplotlib.pyplot import imshow, show, draw
 import numpy as np
-import cv2
 
-arr = np.array([[1, 0, 0],[1, 1, 0]], dtype=np.uint8)
-arr = cv2.resize(arr, (3, 3))
+a = np.array([[1,2,3],[4,5,6],[7,8,9]])
+obj = imshow(a)
+for t in range(0,10):
+    obj.set_data(a)
+    draw()
 
-print(arr)
-print(np.array(arr))
+    for i in range(0,a.shape[0]):
+        for j in range(0,a.shape[1]):
+            a[i][j] += 1
